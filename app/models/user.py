@@ -9,4 +9,6 @@ class User(BaseModel):
     address: str
     phone: str
     balance: float
+    account_number: str
+
 
