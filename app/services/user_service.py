@@ -6,32 +6,18 @@ from app.models.user import User
 
 async def get_all_users():
     try:
-        users = await db_functions.get_all("users")
-        return users
-    except ValueError as ve:
-        raise ValueError(ve)
+        return await db_functions.get_all(collection_name="users")
     except Exception as e:
         raise e
 
 
-async def get_user_by_id(user_id: int):
-    user = await db_functions.get_by_id(user_id, "users")
-    if user:
-        return user
-    return None
-
+async def get_user_by_id(user_id):
+    try:
+         return await db_functions.get_by_id(user_id, collection_name="users")
+    except Exception as e:
+         raise e
 
 async def create_user(new_user: User):
-    """
-    This function adds a new user to the database.
-
-    :param new_user:
-    :param user: The new user to be added, a dictionary.
-    :type user: dict
-    :return: The data of the user that was added to the database.
-    :rtype: dict
-    :raises Exception: If an error occurs during the addition process to the database.
-    """
     try:
         existing_user = await get_user_by_id(new_user.id)
         if existing_user:
@@ -42,6 +28,13 @@ async def create_user(new_user: User):
         return await db_functions.add(user, collection_name="users")
     except Exception as e:
         # Raising an exception if one occurs
+        raise e
+
+
+async def login_user(user_name, user_password):
+    try:
+       return await db_functions.login("users", user_name, user_password)
+    except Exception as e:
         raise e
 
 
