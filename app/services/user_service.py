@@ -45,12 +45,13 @@ async def create_user(new_user: User):
         raise e
 
 
-async def update_user(new_user: User):
+async def update_user(user_id: int, new_user: User):
     try:
-        existing_user = await get_user_by_id(new_user.id)
+        existing_user = await get_user_by_id(user_id)
         if existing_user is None:
             raise ValueError("User not exists")
         new_user.balance = existing_user['balance']
+        new_user.id = user_id
         user = new_user.dict()
         return await db_functions.update(user, collection_name="users")
     except Exception as e:
