@@ -1,9 +1,13 @@
 import uvicorn as uvicorn
 from fastapi import FastAPI
 from app.controllers.user_controller import user_router
+from app.controllers.expense_controller import expenses_router
+from app.controllers.revenue_controller import revenue_router
 
-app=FastAPI()
+app = FastAPI()
 app.include_router(user_router, prefix='/user')
+app.include_router(expenses_router, prefix='/expense')
+app.include_router(revenue_router, prefix='/revenue')
 
 
 if __name__ == '__main__':
