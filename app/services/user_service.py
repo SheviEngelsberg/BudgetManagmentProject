@@ -49,7 +49,7 @@ async def create_user(new_user: User):
         dict: A dictionary containing the result of adding the user.
     """
     try:
-        new_user.id = await last_id() + 1
+        new_user.id = await db_functions.last_id(collection_name="users") + 1
         new_user.balance = 0.0
         user = new_user.dict()
         return await db_functions.add(user, collection_name="users")
@@ -95,13 +95,3 @@ async def update_user(user_id: int, new_user: User):
         raise e
 
 
-async def last_id():
-    try:
-        all_users = await get_all_users()
-        max_id = 0
-        for user in all_users:
-            if user['id'] > max_id:
-                max_id = user['id']
-        return max_id
-    except Exception as e:
-        raise e

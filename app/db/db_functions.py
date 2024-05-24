@@ -110,3 +110,16 @@ async def login(collection_name, object_name, object_password):
     except Exception as e:
         raise RuntimeError(f"Error during login: {e}")
 
+
+async def last_id(collection_name):
+    try:
+        all_collection = await get_all(collection_name)
+        if all_collection is None:
+            return -1
+        max_id = 0
+        for item in all_collection:
+            if item['id'] > max_id:
+                max_id = item['id']
+        return max_id
+    except Exception as e:
+        raise e
