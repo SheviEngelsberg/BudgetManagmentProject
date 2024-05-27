@@ -83,7 +83,7 @@ async def login_user(user_name, user_password):
         raise RuntimeError(f"Error during login: {e}")
 
 
-async def update_user(user_id: int, new_user: User):
+async def update_user(user_id: int, new_user: User, to_update_balance: bool):
     """
     Updates a user's profile.
 
@@ -93,10 +93,14 @@ async def update_user(user_id: int, new_user: User):
 
     Returns:
         str: A message indicating the success of the update.
+        :param user_id:
+        :param new_user:
+        :param to_update_balance:
     """
     try:
         existing_user = await get_user_by_id(user_id)
-        new_user.balance = existing_user['balance']
+        if not to_update_balance:
+            new_user.balance = existing_user['balance']
         new_user.id = user_id
         user = new_user.dict()
         return await db_functions.update(user, collection_name="users")
