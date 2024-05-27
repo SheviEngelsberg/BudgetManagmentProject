@@ -159,9 +159,14 @@ async def delete(document_id, collection_name):
     """
     try:
         result = await my_db[collection_name].delete_one({"id": document_id})
+        print(result)
         if result is not None:
             return f"Document with ID {document_id} deleted successfully."
         else:
             return f"No document found with ID {document_id}."
     except Exception as e:
         raise RuntimeError(f"Error deleting document: {e}")
+
+
+
+
