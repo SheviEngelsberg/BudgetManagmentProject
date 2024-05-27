@@ -11,7 +11,12 @@ async def get_all_users():
         list: A list containing dictionaries of user information.
     """
     try:
-        return await db_functions.get_all(collection_name="users")
+        users = await db_functions.get_all(collection_name="users")
+        if not users:
+            return ValueError('List users not found')
+        return users
+    except ValueError as ve:
+        raise ve
     except Exception as e:
         raise e
 
@@ -73,6 +78,8 @@ async def login_user(user_name, user_password):
     """
     try:
         all_users = await db_functions.get_all("users")
+        if not all_users:
+            return ValueError('List users not found')
         for user in all_users:
             if user['user_name'] == user_name and bcrypt.checkpw(user_password.encode('utf-8'), user['password'].encode('utf-8')):
                 return [user]
@@ -101,8 +108,23 @@ async def update_user(user_id: int, new_user: User, to_update_balance: bool):
         existing_user = await get_user_by_id(user_id)
         if not to_update_balance:
             new_user.balance = existing_user['balance']
+        hashed_password = bcrypt.hashpw(new_user.password.encode('utf-8'), bcrypt.gensalt())
+        new_user.password = hashed_password.decode('utf-8')
         new_user.id = user_id
         user = new_user.dict()
         return await db_functions.update(user, collection_name="users")
+    except Exception as e:
+        raise e
+
+
+async def delete_user(user_id):
+    try:
+        await get_user_by_id(user_id)
+        revenues_user = await db_functions.get_all_by_user_id(user_id, collection_name="revenues")
+        for revenue in revenues_user:
+            await db_functions.delete(revenue['id'], collection_name="revenues")
+        return await db_functions.delete(user_id, collection_name="users")
+    except ValueError as ve:
+        raise ve
     except Exception as e:
         raise e

@@ -72,6 +72,7 @@ async def login_user(user_name: str, user_password: str):
     Returns:
         list: A list of dictionaries containing user information.
     """
+
     try:
         return await user_service.login_user(user_name, user_password)
     except ValueError as e:
@@ -98,3 +99,15 @@ async def update_user(user_id: int, new_user: User):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@user_router.delete('/{user_id}')
+async def delete_user(user_id: int):
+    try:
+        return await user_service.delete_user(user_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
