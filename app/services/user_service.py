@@ -52,7 +52,7 @@ async def create_user(new_user: User):
 
         new_user.id = await db_functions.last_id(collection_name="users") + 1
         new_user.balance = 0.0
-        new_user.password = hashed_password.decode('utf-8')  # Store the hashed password
+        new_user.password = hashed_password.decode('utf-8')
 
         user = new_user.dict()
         return await db_functions.add(user, collection_name="users")
@@ -102,5 +102,3 @@ async def update_user(user_id: int, new_user: User):
         return await db_functions.update(user, collection_name="users")
     except Exception as e:
         raise e
-
-

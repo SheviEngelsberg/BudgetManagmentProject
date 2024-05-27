@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.models.user import User
 from app.services import user_service
+
 user_router = APIRouter()
 
 
@@ -18,7 +19,7 @@ async def get_user_by_id(user_id: int):
     try:
         return await user_service.get_user_by_id(user_id)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -34,7 +35,7 @@ async def get_all_users():
     try:
         users = await user_service.get_all_users()
         if not users:
-            raise HTTPException(status_code=400, detail="No users found")
+            raise HTTPException(status_code=404, detail="No users found")
         return users
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -97,6 +98,3 @@ async def update_user(user_id: int, new_user: User):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
