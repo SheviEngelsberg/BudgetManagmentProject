@@ -18,8 +18,6 @@ async def get_all(collection_name):
         if not results:
             raise ValueError("List not found")
         return to_json(results)
-    except ValueError as ve:
-        raise ve
     except Exception as e:
         raise RuntimeError(f"Error retrieving documents from collection {collection_name}: {e}")
 
@@ -36,14 +34,12 @@ async def get_by_id(object_id, collection_name):
         dict: A dictionary containing the retrieved document.
     """
     try:
-        user = await my_db[collection_name].find_one({"id": object_id})
-        if user is None:
-            raise ValueError("User not found")
-        return to_json(user)
-    except ValueError as ve:
-        raise ve
+        element = await my_db[collection_name].find_one({"id": object_id})
+        if element is None:
+            raise ValueError("Element not found")
+        return to_json(element)
     except Exception as e:
-        raise RuntimeError(f"Error cannot get this {object_id} object: {e}")
+        raise RuntimeError(f"Error retrieving document: {e}")
 
 
 async def add(document, collection_name):
@@ -105,13 +101,20 @@ async def login(collection_name, object_name, object_password):
         if not filtered_users:
             raise ValueError("User not found")
         return filtered_users
-    except ValueError as ve:
-        raise ve
     except Exception as e:
         raise RuntimeError(f"Error during login: {e}")
 
 
 async def last_id(collection_name):
+    """
+    Retrieves the last ID from a specified collection in the database.
+
+    Args:
+        collection_name (str): The name of the collection in the database.
+
+    Returns:
+        int: The last ID found in the collection.
+    """
     try:
         all_collection = await get_all(collection_name)
         if all_collection is None:
@@ -122,4 +125,48 @@ async def last_id(collection_name):
                 max_id = item['id']
         return max_id
     except Exception as e:
-        raise e
+        raise RuntimeError(f"Error retrieving last ID: {e}")
+
+
+async def get_all_by_user_id(user_id, collection_name):
+    """
+    Retrieves all items belonging to a specific user ID from a specified collection in the database.
+
+    Args:
+        user_id (any): The ID of the user.
+        collection_name (str): The name of the collection in the database.
+
+    Returns:
+        list: A list containing dictionaries of retrieved items.
+    """
+    try:
+        all_items = await my_db[collection_name].find({"user_id": user_id}).to_list(length=None)
+        for item in all_items:
+            item["_id"] = str(item["_id"])
+        return all_items
+    except Exception as e:
+        raise RuntimeError(f"Error retrieving items by user ID: {e}")
+
+
+async def delete(document_id, collection_name):
+    """
+    Deletes a document from a specified collection in the database by its ID.
+
+    Args:
+        document_id (any): The ID of the document to delete.
+        collection_name (str): The name of the collection in the database.
+
+    Returns:
+        str: A message indicating the success of the deletion.
+
+    Raises:
+        RuntimeError: If there is an error during the deletion process.
+    """
+    try:
+        result = await my_db[collection_name].delete_one({"id": document_id})
+        if result is not None:
+            return f"Document with ID {document_id} deleted successfully."
+        else:
+            return f"No document found with ID {document_id}."
+    except Exception as e:
+        raise RuntimeError(f"Error deleting document: {e}")
