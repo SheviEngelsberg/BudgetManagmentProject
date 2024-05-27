@@ -3,10 +3,12 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class Expenses(BaseModel):
+class Expense(BaseModel):
+    id: int
     user_id: int
     total_expense: float
     date: datetime
-    account_number: str
+    description_expense: str
+
 
 
