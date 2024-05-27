@@ -15,8 +15,6 @@ async def get_all(collection_name):
     try:
         cursor = my_db[collection_name].find({})
         results = await cursor.to_list(length=None)
-        if not results:
-            raise ValueError("List not found")
         return to_json(results)
     except Exception as e:
         raise RuntimeError(f"Error retrieving documents from collection {collection_name}: {e}")
@@ -117,12 +115,9 @@ async def last_id(collection_name):
     """
     try:
         all_collection = await get_all(collection_name)
-        if all_collection is None:
+        if not all_collection:
             return -1
-        max_id = 0
-        for item in all_collection:
-            if item['id'] > max_id:
-                max_id = item['id']
+        max_id = max(item.get('id', 0) for item in all_collection)
         return max_id
     except Exception as e:
         raise RuntimeError(f"Error retrieving last ID: {e}")
