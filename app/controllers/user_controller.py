@@ -103,6 +103,15 @@ async def update_user(user_id: int, new_user: User):
 
 @user_router.delete('/{user_id}')
 async def delete_user(user_id: int):
+    """
+    Deletes a user from the system.
+
+    Args:
+        user_id (int): The ID of the user to be deleted.
+
+    Returns:
+        dict: A dictionary containing the result of deleting the user.
+    """
     try:
         return await user_service.delete_user(user_id)
     except ValueError as e:

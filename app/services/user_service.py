@@ -118,6 +118,15 @@ async def update_user(user_id: int, new_user: User, to_update_balance: bool):
 
 
 async def delete_user(user_id):
+    """
+    Deletes a user from the system along with their associated revenues.
+
+    Args:
+        user_id (any): The ID of the user to be deleted.
+
+    Returns:
+        dict: A dictionary containing the result of deleting the user.
+    """
     try:
         await get_user_by_id(user_id)
         revenues_user = await db_functions.get_all_by_user_id(user_id, collection_name="revenues")
