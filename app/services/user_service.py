@@ -12,7 +12,8 @@ async def get_all_users():
     """
     try:
         users = await db_functions.get_all(collection_name="users")
-        if not users:
+        print(users)
+        if users is None:
             return ValueError('List users not found')
         return users
     except ValueError as ve:
@@ -130,8 +131,11 @@ async def delete_user(user_id):
     try:
         await get_user_by_id(user_id)
         revenues_user = await db_functions.get_all_by_user_id(user_id, collection_name="revenues")
+        expense_user = await db_functions.get_all_by_user_id(user_id, collection_name="expenses")
         for revenue in revenues_user:
             await db_functions.delete(revenue['id'], collection_name="revenues")
+        for expense in expense_user:
+            await db_functions.delete(expense['id'], collection_name="expenses")
         return await db_functions.delete(user_id, collection_name="users")
     except ValueError as ve:
         raise ve
