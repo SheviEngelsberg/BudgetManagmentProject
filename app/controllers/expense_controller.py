@@ -1,49 +1,55 @@
 from fastapi import APIRouter, HTTPException
-from app.models.expenses import Expenses
-from app.services import expenses_service
-import json
-from bson import json_util
+from app.models.expense import Expense
+from app.services import expense_service
 
-expenses_router = APIRouter()
+expense_router = APIRouter()
 
 
-@expenses_router.get('/login/{user_id}')
-async def get_user_by_id(user_id: int):
+@expense_router.get('/{expense_id}')
+async def get_expense_by_id(expense_id: int):
     try:
-        return await expenses_service.get_user_by_id(user_id)
+        return await expense_service.get_expense_by_id(expense_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@expenses_router.get('')
-async def get_all_users():
+@expense_router.get('/user/{user_id}')
+async def get_all_expenses_by_user_id(user_id: int):
     try:
-        return await user_service.get_all_users()
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@expenses_router.post('/create')
-async def create_expenses(new_expenses: Expenses):
-    try:
-        return await expenses_service.create_expenses(new_expenses)
+        return await expense_service.get_all_expenses_by_user_id(user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@expenses_router.put('/profile_update/{user_id}')
-async def update_user(user_id: int, new_user: User):
+@expense_router.post('/create_expense_to_user/{user_id}')
+async def create_revenue(user_id: int, new_expense: Expense):
     try:
-        return await user_service.update_user(user_id, new_user)
+        return await expense_service.create_expense(user_id, new_expense)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@expense_router.put('/update expense/{expense_id}')
+async def update_expense(expense_id: int, new_expense: Expense):
+    try:
+        return await expense_service.update_expense(expense_id, new_expense)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
+
+@expense_router.delete('/delete expense/{expense_id}')
+async def delete_expense(expense_id: int):
+    try:
+        return await expense_service.delete_expense(expense_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
