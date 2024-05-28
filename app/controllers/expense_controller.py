@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.models.expense import Expense
 from app.services import expense_service
+from app import validators
 
 expense_router = APIRouter()
 
@@ -50,7 +51,8 @@ async def get_all_expenses_by_user_id(user_id: int):
 
 
 @expense_router.post('/create_expense_to_user/{user_id}')
-async def create_expense_to_user(user_id: int, new_expense: Expense):
+async def create_expense_to_user(user_id: int, new_expense: Expense,
+                                 validate_expense: bool = Depends(validators.validate_expense_dependency)):
     """
     Create an expense for a specific user.
 
@@ -63,9 +65,13 @@ async def create_expense_to_user(user_id: int, new_expense: Expense):
 
     Raises:
         HTTPException: If an error occurs during the creation process.
+        :param validate_expense:
+        :param user_id:
+        :param new_expense:
     """
     try:
-        return await expense_service.create_expense(user_id, new_expense)
+        if validate_expense:
+            return await expense_service.create_expense(user_id, new_expense)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -73,7 +79,7 @@ async def create_expense_to_user(user_id: int, new_expense: Expense):
 
 
 @expense_router.put('/update_expense/{expense_id}')
-async def update_expense(expense_id: int, new_expense: Expense):
+async def update_expense(expense_id: int, new_expense: Expense, validate_expense: bool = Depends(validators.validate_expense_dependency)):
     """
     Update an existing expense.
 
@@ -86,9 +92,13 @@ async def update_expense(expense_id: int, new_expense: Expense):
 
     Raises:
         HTTPException: If an error occurs during the update process.
+        :param expense_id:
+        :param new_expense:
+        :param validate_expense:
     """
     try:
-        return await expense_service.update_expense(expense_id, new_expense)
+        if validate_expense:
+            return await expense_service.update_expense(expense_id, new_expense)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

@@ -1,6 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.models.user import User
 from app.services import user_service
+from app import validators
+
 
 user_router = APIRouter()
 
@@ -19,7 +21,7 @@ async def get_user_by_id(user_id: int):
     try:
         return await user_service.get_user_by_id(user_id)
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -42,7 +44,11 @@ async def get_all_users():
 
 
 @user_router.post('/register')
-async def add_user(new_user: User):
+async def add_user(new_user: User,
+                   validate_password: bool = Depends(validators.validate_password_dependency),
+                   validate_phone: bool = Depends(validators.validate_phone_dependency),
+                   validate_user_name: bool = Depends(validators.validate_user_name_dependency),
+                   validate_email: bool = Depends(validators.validate_email_dependency)):
     """
     Adds a new user to the system.
 
@@ -51,9 +57,15 @@ async def add_user(new_user: User):
 
     Returns:
         dict: A dictionary containing the result of adding the user.
+        :param validate_email:
+        :param validate_user_name:
+        :param validate_phone:
+        :param validate_password:
+        :param new_user:
     """
     try:
-        return await user_service.create_user(new_user)
+        if validate_password and validate_phone and validate_user_name and validate_email:
+            return await user_service.create_user(new_user)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -82,7 +94,11 @@ async def login_user(user_name: str, user_password: str):
 
 
 @user_router.put('/profile_update/{user_id}')
-async def update_user(user_id: int, new_user: User):
+async def update_user(user_id: int, new_user: User,
+                      validate_password: bool = Depends(validators.validate_password_dependency),
+                      validate_phone: bool = Depends(validators.validate_phone_dependency),
+                      validate_user_name: bool = Depends(validators.validate_user_name_dependency),
+                      validate_email: bool = Depends(validators.validate_email_dependency)):
     """
     Updates a user's profile.
 
@@ -92,9 +108,16 @@ async def update_user(user_id: int, new_user: User):
 
     Returns:
         str: A message indicating the success of the update.
+        :param validate_email:
+        :param validate_user_name:
+        :param validate_phone:
+        :param validate_password:
+        :param user_id:
+        :param new_user:
     """
     try:
-        return await user_service.update_user(user_id, new_user)
+        if validate_password and validate_phone and validate_user_name and validate_email:
+            return await user_service.update_user(user_id, new_user)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
