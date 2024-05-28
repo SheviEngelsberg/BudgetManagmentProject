@@ -1,7 +1,6 @@
 from app.db import db_functions
 from app.models.revenue import Revenue
 from datetime import datetime
-from app.services.user_service import update_user
 from app.models.user import User
 
 
@@ -110,12 +109,12 @@ async def update_revenue(revenue_id: int, new_revenue: Revenue):
         user_data = await db_functions.get_by_id(last_user_id, "users")
         user = User(**user_data)
         user.balance -= last_total_revenue
-        await update_user(last_user_id, user, True)
+        await db_functions.update(user, "users")
 
         new_user_data = await db_functions.get_by_id(new_revenue.user_id, "users")
         new_user = User(**new_user_data)
         new_user.balance += new_revenue.total_revenue
-        await update_user(new_revenue.user_id, new_user, True)
+        await db_functions.update(new_user, "users")
 
         new_revenue.id = revenue_id
         new_revenue.date = datetime.now()

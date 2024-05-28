@@ -109,12 +109,12 @@ async def update_expense(expense_id: int, new_expense: Expense):
         user_data = await db_functions.get_by_id(last_user_id, "users")
         user = User(**user_data)
         user.balance += last_total_expense
-        await update_user(last_user_id, user, True)
+        await db_functions.update(user, "users")
 
         new_user_data = await db_functions.get_by_id(new_expense.user_id, "users")
         new_user = User(**new_user_data)
         new_user.balance -= new_expense.total_expense
-        await update_user(new_expense.user_id, new_user, True)
+        await db_functions.update(new_user, "users")
 
         new_expense.id = new_expense
         new_expense.date = datetime.now()

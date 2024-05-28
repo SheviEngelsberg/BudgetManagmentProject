@@ -91,7 +91,7 @@ async def login_user(user_name, user_password):
         raise RuntimeError(f"Error during login: {e}")
 
 
-async def update_user(user_id: int, new_user: User, to_update_balance: bool):
+async def update_user(user_id: int, new_user: User):
     """
     Updates a user's profile.
 
@@ -103,12 +103,10 @@ async def update_user(user_id: int, new_user: User, to_update_balance: bool):
         str: A message indicating the success of the update.
         :param user_id:
         :param new_user:
-        :param to_update_balance:
     """
     try:
         existing_user = await get_user_by_id(user_id)
-        if not to_update_balance:
-            new_user.balance = existing_user['balance']
+        new_user.balance = existing_user['balance']
         hashed_password = bcrypt.hashpw(new_user.password.encode('utf-8'), bcrypt.gensalt())
         new_user.password = hashed_password.decode('utf-8')
         new_user.id = user_id

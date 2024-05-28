@@ -94,7 +94,7 @@ async def update_user(user_id: int, new_user: User):
         str: A message indicating the success of the update.
     """
     try:
-        return await user_service.update_user(user_id, new_user, to_update_balance=False)
+        return await user_service.update_user(user_id, new_user)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
