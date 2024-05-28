@@ -1,6 +1,7 @@
 import bcrypt
 from app.db import db_functions
 from app.models.user import User
+from app import validators
 
 
 async def get_all_users():
@@ -55,11 +56,9 @@ async def create_user(new_user: User):
     """
     try:
         hashed_password = bcrypt.hashpw(new_user.password.encode('utf-8'), bcrypt.gensalt())
-
         new_user.id = await db_functions.last_id(collection_name="users") + 1
         new_user.balance = 0.0
         new_user.password = hashed_password.decode('utf-8')
-
         user = new_user.dict()
         return await db_functions.add(user, collection_name="users")
     except Exception as e:
@@ -80,7 +79,7 @@ async def login_user(user_name, user_password):
     try:
         all_users = await db_functions.get_all("users")
         if not all_users:
-            return ValueError('List users not found')
+            raise ValueError('List users not found')
         for user in all_users:
             if user['user_name'] == user_name and bcrypt.checkpw(user_password.encode('utf-8'), user['password'].encode('utf-8')):
                 return [user]
