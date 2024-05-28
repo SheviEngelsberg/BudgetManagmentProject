@@ -109,12 +109,12 @@ async def update_revenue(revenue_id: int, new_revenue: Revenue):
         user_data = await db_functions.get_by_id(last_user_id, "users")
         user = User(**user_data)
         user.balance -= last_total_revenue
-        await db_functions.update(user, "users")
+        await db_functions.update(user.dict(), "users")
 
         new_user_data = await db_functions.get_by_id(new_revenue.user_id, "users")
         new_user = User(**new_user_data)
         new_user.balance += new_revenue.total_revenue
-        await db_functions.update(new_user, "users")
+        await db_functions.update(new_user.dict(), "users")
 
         new_revenue.id = revenue_id
         new_revenue.date = datetime.now()

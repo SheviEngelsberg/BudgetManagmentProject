@@ -80,29 +80,6 @@ async def update(document, collection_name):
     except Exception as e:
         raise RuntimeError(f"Error updating document: {e}")
 
-
-async def login(collection_name, object_name, object_password):
-    """
-    Logs in a user.
-
-    Args:
-        collection_name (str): The name of the collection in the database.
-        object_name (str): The username of the user.
-        object_password (str): The password of the user.
-
-    Returns:
-        list: A list of dictionaries containing user information.
-    """
-    try:
-        all_users = await get_all(collection_name)
-        filtered_users = [user for user in all_users if user['user_name'] == object_name and user['password'] == object_password]
-        if not filtered_users:
-            raise ValueError("User not found")
-        return filtered_users
-    except Exception as e:
-        raise RuntimeError(f"Error during login: {e}")
-
-
 async def last_id(collection_name):
     """
     Retrieves the last ID from a specified collection in the database.
