@@ -3,13 +3,13 @@ from fastapi import FastAPI
 from app.controllers.user_controller import user_router
 from app.controllers.expense_controller import expense_router
 from app.controllers.revenue_controller import revenue_router
-from app.visualization.graph_router import graph_router
+from app.visualization.graph_router import visualization_router
 
 app = FastAPI()
 app.include_router(user_router, prefix='/user')
 app.include_router(expense_router, prefix='/expense')
 app.include_router(revenue_router, prefix='/revenue')
-app.include_router(graph_router, prefix='/visualization')
+app.include_router(visualization_router, prefix='/visualization')
 
 
 if __name__ == '__main__':
